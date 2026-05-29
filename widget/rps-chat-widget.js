@@ -5,8 +5,7 @@
  */
 
 (function () {
-  const PROXY_URL = 'https://YOUR-APP.vercel.app/api/chat'; // ← update after Vercel deploy
-
+const PROXY_URL = 'https://rps-chat.vercel.app/api/chat';
   const COLORS = { primary: '#185FA5', light: '#E6F1FB', border: '#d0dff0' };
 
   const SYSTEM = `You are an AI assistant for Restaurant Property Sellers (RPS), a London-based hospitality business broker. You help buyers find restaurants, cafes, takeaways and pubs for sale, and help sellers get free valuations.
