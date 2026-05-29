@@ -5,12 +5,14 @@ export default async function handler(req, res) {
   }
 
   // Allow requests from your website only (update this to your domain)
-  const allowedOrigins = [
-    'https://restaurantpropertysellers.com',
-    'https://www.restaurantpropertysellers.com',
-  ];
+ const allowedOrigins = [
+  'https://restaurantpropertysellers.com',
+  'https://www.restaurantpropertysellers.com',
+  'https://rps-chat.vercel.app',
+  'null',
+];
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
+  if (!origin || allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
   res.setHeader('Access-Control-Allow-Methods', 'POST');
