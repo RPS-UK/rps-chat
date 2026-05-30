@@ -240,7 +240,7 @@ Only emit LEAD_DATA once you have at least a name OR email. Keep responses conci
   function sendLeadToWebhook(lead) {
     // Optional: send lead data to your CRM or webhook
     // Replace with your HubSpot / Zapier / Make webhook URL
-    const WEBHOOK_URL = ''; // e.g. 'https://hooks.zapier.com/hooks/catch/xxx/yyy/'
+const WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/4882030/4bhcoqo/';
     if (!WEBHOOK_URL) return;
     fetch(WEBHOOK_URL, {
       method: 'POST',
