@@ -5,7 +5,8 @@
  */
 
 (function () {
-const PROXY_URL = 'https://rps-chat.vercel.app/api/chat';
+  const PROXY_URL = 'https://rps-chat.vercel.app/api/chat'; // ← update after Vercel deploy
+
   const COLORS = { primary: '#185FA5', light: '#E6F1FB', border: '#d0dff0' };
 
   const SYSTEM = `You are an AI assistant for Restaurant Property Sellers (RPS), a London-based hospitality business broker. You help buyers find restaurants, cafes, takeaways and pubs for sale, and help sellers get free valuations.
@@ -200,8 +201,13 @@ Only emit LEAD_DATA once you have at least a name OR email. Keep responses conci
   function addMsg(text, role) {
     const d = document.createElement('div');
     d.className = 'rps-msg ' + (role === 'user' ? 'user' : role === 'thinking' ? 'bot thinking' : 'bot');
-    d.textContent = text;
     if (role === 'thinking') d.id = 'rps-thinking';
+    if (role === 'bot') {
+      const linked = text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#185FA5;text-decoration:underline;">$1</a>');
+      d.innerHTML = linked;
+    } else {
+      d.textContent = text;
+    }
     msgs.appendChild(d);
     msgs.scrollTop = msgs.scrollHeight;
     return d;
