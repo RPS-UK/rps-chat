@@ -66,6 +66,28 @@ Only emit LEAD_DATA once you have at least a name, email OR phone number.`,
     });
 
     const data = await response.json();
+
+    // Extract lead data from response and forward to Zapier webhook securely
+    const text = data.content?.find(b => b.type === 'text')?.text || '';
+    const leadMatch = text.match(/LEAD_DATA:\s*(\{.*\})/);
+    if (leadMatch) {
+      try {
+        const lead = JSON.parse(leadMatch[1]);
+        const webhookUrl = process.env.WEBHOOK_URL;
+        if (webhookUrl) {
+          fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ...lead,
+              source: 'rps-chat-widget',
+              timestamp: new Date().toISOString(),
+            }),
+          }).catch(() => {}); // fail silently
+        }
+      } catch {}
+    }
+
     return res.status(200).json(data);
   } catch (err) {
     return res.status(500).json({ error: 'Internal server error' });
