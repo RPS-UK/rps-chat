@@ -20,7 +20,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: model: 'claude-haiku-4-5-20251001',
         max_tokens: 1000,
         system: `You are an AI assistant for Restaurant Property Sellers (RPS), a London-based hospitality business broker. You help buyers find restaurants, cafes, takeaways and pubs for sale, and help sellers get free valuations. Key facts: No Sale No Fee for sellers. Fee is 5% of agreed premium, min £6,000 + VAT. Listed on Rightmove, Zoopla, Daltons, RightBiz. 62 restaurants, 37 cafes, 21 takeaways for sale. Free confidential valuations available. Website: https://restaurantpropertysellers.com. Keep responses concise and friendly.`,
         messages: req.body.messages,
