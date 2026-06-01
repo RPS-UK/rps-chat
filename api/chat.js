@@ -66,27 +66,33 @@ GENERAL RULES:
 - Always be helpful to both buyers and sellers
 - After answering, ask for their name, email and phone number to follow up
 - Keep responses concise and friendly
+- IMPORTANT: As soon as you have a name, email OR phone number, you MUST include the LEAD_DATA block in your response
 
-When you collect a name, email or phone number end your message with:
+When you collect a name, email or phone number you MUST end your message with this exact format on a new line:
 LEAD_DATA: {"name":"...","email":"...","phone":"...","intent":"buy|sell|let|browse","type":"Restaurant|Cafe|Takeaway|Pub|Property","budget":"...","location":"...","score":"hot|warm|cold"}
 
-Score hot if: ready to act. Warm if: interested but vague. Cold if: just browsing.
-Only emit LEAD_DATA once you have at least a name, email OR phone number.`,
+Score hot if: ready to act. Warm if: interested but vague. Cold if: just browsing.`,
         messages: req.body.messages,
       }),
     });
 
     const data = await response.json();
 
-    // Extract lead data and forward to Zapier webhook securely
+    // Extract lead data and forward to Zapier webhook
     const text = data.content?.find(b => b.type === 'text')?.text || '';
-    const leadMatch = text.match(/LEAD_DATA:\s*(\{.*\})/);
+    console.log('Response text:', text.substring(0, 200));
+    
+    const leadMatch = text.match(/LEAD_DATA:\s*(\{[^}]+\})/);
+    console.log('Lead match:', leadMatch ? 'FOUND' : 'NOT FOUND');
+    
     if (leadMatch) {
       try {
         const lead = JSON.parse(leadMatch[1]);
         const webhookUrl = process.env.WEBHOOK_URL;
+        console.log('Webhook URL present:', !!webhookUrl);
+        
         if (webhookUrl) {
-          fetch(webhookUrl, {
+          const webhookRes = await fetch(webhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -94,13 +100,17 @@ Only emit LEAD_DATA once you have at least a name, email OR phone number.`,
               source: 'rps-chat-widget',
               timestamp: new Date().toISOString(),
             }),
-          }).catch(() => {});
+          });
+          console.log('Webhook response status:', webhookRes.status);
         }
-      } catch {}
+      } catch (e) {
+        console.log('Webhook error:', e.message);
+      }
     }
 
     return res.status(200).json(data);
   } catch (err) {
+    console.error('Handler error:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
