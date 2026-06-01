@@ -6,10 +6,9 @@
 (function () {
   const PROXY_URL = 'https://rps-chat.vercel.app/api/chat';
 
-  // RPS Brand Colors
   const COLORS = {
-    primary: '#2C5F2E',      // RPS dark green
-    secondary: '#FFD700',    // RPS gold/yellow
+    primary: '#2C5F2E',
+    secondary: '#FFD700',
     light: '#FFFFFF',
     dark: '#1a3a1c',
     border: '#c8dbc9',
@@ -24,15 +23,24 @@
       border: 3px solid ${COLORS.secondary};
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      flex-direction: column; gap: 2px;
+      flex-direction: column; gap: 3px;
       box-shadow: 0 6px 20px rgba(44,95,46,0.45);
       transition: transform 0.2s, box-shadow 0.2s;
+      padding: 0;
     }
     #rps-chat-btn:hover { transform: scale(1.08); box-shadow: 0 8px 25px rgba(44,95,46,0.55); }
-    #rps-chat-btn .rps-btn-icon { font-size: 26px; line-height: 1; }
-    #rps-chat-btn .rps-btn-label {
-      font-size: 9px; font-weight: 700; color: ${COLORS.secondary};
+    #rps-chat-btn .rps-btn-icon {
+      font-size: 11px; font-weight: 800; color: #fff;
       letter-spacing: 0.5px; font-family: -apple-system, sans-serif;
+      line-height: 1;
+    }
+    #rps-chat-btn .rps-btn-label {
+      font-size: 8px; font-weight: 700; color: ${COLORS.secondary};
+      letter-spacing: 0.8px; font-family: -apple-system, sans-serif;
+      line-height: 1; text-align: center;
+    }
+    #rps-chat-btn .rps-chat-svg {
+      width: 28px; height: 28px; fill: #fff;
     }
 
     #rps-chat-box {
@@ -56,8 +64,9 @@
     .rps-header-avatar {
       width: 40px; height: 40px; border-radius: 50%;
       background: ${COLORS.secondary};
-      display: flex; align-items: center; justify-content: center; font-size: 20px;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-weight: 800; font-size: 13px; color: ${COLORS.primary};
+      letter-spacing: 0.3px;
     }
     .rps-header-title { font-size: 14px; font-weight: 700; margin: 0; color: #fff; }
     .rps-header-sub { font-size: 11px; color: ${COLORS.secondary}; margin: 2px 0 0; }
@@ -125,8 +134,7 @@
       width: 22px; height: 22px; border-radius: 50%;
       background: #e53e3e; color: #fff; font-size: 12px;
       font-weight: 700; display: flex; align-items: center; justify-content: center;
-      font-family: -apple-system, sans-serif;
-      border: 2px solid #fff;
+      font-family: -apple-system, sans-serif; border: 2px solid #fff;
     }
 
     .rps-powered {
@@ -145,13 +153,15 @@
 
   btnWrap.innerHTML = `
     <button id="rps-chat-btn" aria-label="Chat with RPS">
-      <span class="rps-btn-icon">🏪</span>
-      <span class="rps-btn-label">CHAT</span>
+      <svg class="rps-chat-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>
+      </svg>
+      <span class="rps-btn-label">AI CHAT SUPPORT</span>
     </button>
 
     <div id="rps-chat-box" role="dialog" aria-label="RPS Assistant">
       <div class="rps-header">
-        <div class="rps-header-avatar">🏪</div>
+        <div class="rps-header-avatar">RPS</div>
         <div>
           <p class="rps-header-title">RPS Assistant</p>
           <p class="rps-header-sub">Restaurant Property Sellers</p>
@@ -183,14 +193,16 @@
   function toggleChat() {
     isOpen = !isOpen;
     box.classList.toggle('open', isOpen);
+    const svg = chatBtn.querySelector('.rps-chat-svg');
+    const label = chatBtn.querySelector('.rps-btn-label');
     if (isOpen) {
       clearUnread();
       inp.focus();
-      chatBtn.querySelector('.rps-btn-icon').textContent = '✕';
-      chatBtn.querySelector('.rps-btn-label').textContent = 'CLOSE';
+      svg.innerHTML = '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>';
+      label.textContent = 'CLOSE';
     } else {
-      chatBtn.querySelector('.rps-btn-icon').textContent = '🏪';
-      chatBtn.querySelector('.rps-btn-label').textContent = 'CHAT';
+      svg.innerHTML = '<path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>';
+      label.textContent = 'AI CHAT SUPPORT';
     }
   }
 
@@ -238,12 +250,6 @@
     msgs.scrollTop = msgs.scrollHeight;
   }
 
-  function parseLead(text) {
-    const m = text.match(/LEAD_DATA:\s*(\{[\s\S]*?\})/);
-    if (!m) return null;
-    try { return JSON.parse(m[1]); } catch { return null; }
-  }
-
   function cleanText(text) {
     return text.replace(/LEAD_DATA:\s*\{[\s\S]*?\}/, '').trim();
   }
@@ -284,7 +290,6 @@
   sendBtn.addEventListener('click', () => handleSend());
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') handleSend(); });
 
-  // Greeting with option chips
   setTimeout(() => {
     addMsg("👋 Welcome to Restaurant Property Sellers!\n\nHow can I help you today?", 'bot');
     addChips(['🛒 I am a Buyer', '💰 I am a Seller', '🏢 I am a Landlord', '🤝 I am a Franchisor']);
