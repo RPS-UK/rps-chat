@@ -64,9 +64,9 @@ Answer questions about selling confidently. Key facts:
 
 GENERAL RULES:
 - Always be helpful to both buyers and sellers
-- After answering, ALWAYS ask for their name, email AND phone number. Ask for all three explicitly. Do not proceed without asking for the phone number.
+- After answering, ALWAYS ask for their name, email AND phone number
 - Keep responses concise and friendly
-- IMPORTANT: As soon as you have a name, email OR phone number, you MUST include the LEAD_DATA block in your response
+- IMPORTANT: As soon as you have a name, email OR phone number, include the LEAD_DATA block
 
 When you collect a name, email or phone number you MUST end your message with this exact format on a new line:
 LEAD_DATA: {"name":"...","email":"...","phone":"...","intent":"buy|sell|let|browse","type":"Restaurant|Cafe|Takeaway|Pub|Property","budget":"...","location":"...","score":"hot|warm|cold"}
@@ -77,31 +77,34 @@ Score hot if: ready to act. Warm if: interested but vague. Cold if: just browsin
     });
 
     const data = await response.json();
-
-    // Extract lead data and forward to Zapier webhook
     const text = data.content?.find(b => b.type === 'text')?.text || '';
-    console.log('Response text:', text.substring(0, 200));
     
     const leadMatch = text.match(/LEAD_DATA:\s*(\{[\s\S]*?\})/);
-    console.log('Lead match:', leadMatch ? 'FOUND' : 'NOT FOUND');
     
     if (leadMatch) {
       try {
         const lead = JSON.parse(leadMatch[1]);
         const webhookUrl = process.env.WEBHOOK_URL;
-        console.log('Webhook URL present:', !!webhookUrl);
-        
         if (webhookUrl) {
-          const webhookRes = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              ...lead,
-              source: 'rps-chat-widget',
-              timestamp: new Date().toISOString(),
-            }),
+          // Send as flat form-encoded data so Zapier can read each field
+          const formData = new URLSearchParams({
+            name: lead.name || '',
+            email: lead.email || '',
+            phone: lead.phone || '',
+            intent: lead.intent || '',
+            type: lead.type || '',
+            budget: lead.budget || '',
+            location: lead.location || '',
+            score: lead.score || '',
+            source: 'rps-chat-widget',
+            timestamp: new Date().toISOString(),
           });
-          console.log('Webhook response status:', webhookRes.status);
+          
+          await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData.toString(),
+          });
         }
       } catch (e) {
         console.log('Webhook error:', e.message);
@@ -110,7 +113,6 @@ Score hot if: ready to act. Warm if: interested but vague. Cold if: just browsin
 
     return res.status(200).json(data);
   } catch (err) {
-    console.error('Handler error:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
