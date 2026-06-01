@@ -66,7 +66,7 @@ GENERAL RULES:
 - Always be helpful to both buyers and sellers
 - After answering, ALWAYS ask for their name, email AND phone number
 - Keep responses concise and friendly
-- IMPORTANT: As soon as you have a name, email OR phone number, include the LEAD_DATA block
+- As soon as you have a name, email OR phone number, include the LEAD_DATA block
 
 When you collect a name, email or phone number you MUST end your message with this exact format on a new line:
 LEAD_DATA: {"name":"...","email":"...","phone":"...","intent":"buy|sell|let|browse","type":"Restaurant|Cafe|Takeaway|Pub|Property","budget":"...","location":"...","score":"hot|warm|cold"}
@@ -86,8 +86,29 @@ Score hot if: ready to act. Warm if: interested but vague. Cold if: just browsin
         const lead = JSON.parse(leadMatch[1]);
         const webhookUrl = process.env.WEBHOOK_URL;
         if (webhookUrl) {
-          // Send as flat form-encoded data so Zapier can read each field
+          // Format a clean email body and send as one field
+          const emailBody = `
+New Lead from RPS Website Chat
+================================
+
+Name:          ${lead.name || 'Not provided'}
+Email:         ${lead.email || 'Not provided'}
+Phone:         ${lead.phone || 'Not provided'}
+
+Intent:        ${lead.intent || 'Not provided'}
+Business Type: ${lead.type || 'Not provided'}
+Budget:        ${lead.budget || 'Not provided'}
+Location:      ${lead.location || 'Not provided'}
+Score:         ${lead.score || 'Not provided'}
+
+Time:          ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}
+Source:        RPS Chat Widget
+================================
+          `.trim();
+
           const formData = new URLSearchParams({
+            subject: `New ${lead.score?.toUpperCase() || 'NEW'} Lead - ${lead.name || 'Unknown'} - ${lead.location || 'Unknown location'}`,
+            body: emailBody,
             name: lead.name || '',
             email: lead.email || '',
             phone: lead.phone || '',
