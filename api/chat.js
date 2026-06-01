@@ -64,7 +64,7 @@ Answer questions about selling confidently. Key facts:
 
 GENERAL RULES:
 - Always be helpful to both buyers and sellers
-- After answering, ask for their name, email and phone number to follow up
+- After answering, ALWAYS ask for their name, email AND phone number. Ask for all three explicitly. Do not proceed without asking for the phone number.
 - Keep responses concise and friendly
 - IMPORTANT: As soon as you have a name, email OR phone number, you MUST include the LEAD_DATA block in your response
 
@@ -82,7 +82,7 @@ Score hot if: ready to act. Warm if: interested but vague. Cold if: just browsin
     const text = data.content?.find(b => b.type === 'text')?.text || '';
     console.log('Response text:', text.substring(0, 200));
     
-    const leadMatch = text.match(/LEAD_DATA:\s*(\{[^}]+\})/);
+    const leadMatch = text.match(/LEAD_DATA:\s*(\{[\s\S]*?\})/);
     console.log('Lead match:', leadMatch ? 'FOUND' : 'NOT FOUND');
     
     if (leadMatch) {
