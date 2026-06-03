@@ -219,7 +219,7 @@
     if (lat) p.set('lat', lat);
     if (lng) p.set('lng', lng);
     p.set('use_radius', 'on');
-    p.set('radius', radius || '1');
+    p.set('radius', radius || '3');
     if (maxPrice) p.set('max-price', maxPrice);
     return base + '?' + p.toString();
   }
@@ -286,7 +286,7 @@
       return;
     }
 
-    addMsg('Searching for listings near ' + location + '...', 'bot');
+    addMsg('Searching for listings within 3 miles of ' + location + '...', 'bot');
 
     const geo = await geocode(location);
     const lat = geo ? geo.lat : null;
@@ -297,15 +297,15 @@
     const lastMsg = msgs.lastElementChild;
     if (lastMsg && lastMsg.textContent.includes('Searching')) lastMsg.remove();
 
-    const exactUrl = buildSearchUrl(type, formattedLocation, lat, lng, maxPrice, '1');
-    const broaderUrl = buildSearchUrl(type, formattedLocation, lat, lng, maxPrice, '5');
+    const exactUrl = buildSearchUrl(type, formattedLocation, lat, lng, maxPrice, '3');
+    const broaderUrl = buildSearchUrl(type, formattedLocation, lat, lng, maxPrice, '6');
     const similarUrl = buildSearchUrl('', formattedLocation, lat, lng, 0, '5');
 
-    const label = [type || 'Businesses', 'within 1 mile of', formattedLocation, maxPrice ? '— under £' + maxPrice.toLocaleString() : ''].filter(Boolean).join(' ');
+    const label = [type || 'Businesses', 'within 3 miles of', formattedLocation, maxPrice ? '— under £' + maxPrice.toLocaleString() : ''].filter(Boolean).join(' ');
 
     addMsg('Here are listings matching your requirement.', 'bot', [
-      { url: exactUrl, label: 'View ' + label },
-      { url: broaderUrl, label: 'Expand to 5 miles (more results)', secondary: true },
+      { url: exactUrl, label: 'View ' + label.replace('within 1 mile', 'within 3 miles') },
+      { url: broaderUrl, label: 'Expand to 6 miles (more results)', secondary: true },
       { url: similarUrl, label: 'See all listings near ' + formattedLocation, secondary: true }
     ]);
 
@@ -358,13 +358,13 @@
       const lat = geo ? geo.lat : null;
       const lng = geo ? geo.lng : null;
       const formattedLocation = geo ? geo.formatted.split(',')[0] : location;
-      const exactUrl = buildSearchUrl(pendingType, formattedLocation, lat, lng, pendingPrice, '1');
-      const broaderUrl = buildSearchUrl(pendingType, formattedLocation, lat, lng, pendingPrice, '5');
+      const exactUrl = buildSearchUrl(pendingType, formattedLocation, lat, lng, pendingPrice, '3');
+      const broaderUrl = buildSearchUrl(pendingType, formattedLocation, lat, lng, pendingPrice, '6');
       const similarUrl = buildSearchUrl('', formattedLocation, lat, lng, 0, '5');
       setTimeout(() => {
         addMsg('Here are listings near ' + formattedLocation + '.', 'bot', [
-          { url: exactUrl, label: 'View listings within 1 mile of ' + formattedLocation },
-          { url: broaderUrl, label: 'Expand to 5 miles (more results)', secondary: true },
+          { url: exactUrl, label: 'View listings within 3 miles of ' + formattedLocation },
+          { url: broaderUrl, label: 'Expand to 6 miles (more results)', secondary: true },
           { url: similarUrl, label: 'See all listings near ' + formattedLocation, secondary: true }
         ]);
         addMsg('May I take your name, email and phone number to send you alerts for new listings?', 'bot');
