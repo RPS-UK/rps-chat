@@ -191,24 +191,16 @@
     msgs.scrollTop = msgs.scrollHeight;
   }
 
-  // Geocode location using Google Maps (already loaded on RPS site)
+  // Geocode via RPS proxy to avoid CORS issues
   async function geocode(location) {
-    return new Promise((resolve) => {
-      if (typeof google !== 'undefined' && google.maps && google.maps.Geocoder) {
-        const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({ address: location + ', UK' }, (results, status) => {
-          if (status === 'OK' && results[0]) {
-            const loc = results[0].geometry.location;
-            const formatted = results[0].formatted_address;
-            resolve({ lat: loc.lat(), lng: loc.lng(), formatted });
-          } else {
-            resolve(null);
-          }
-        });
-      } else {
-        resolve(null);
-      }
-    });
+    try {
+      const res = await fetch(PROXY_URL.replace('/api/chat', '/api/geocode') + '?q=' + encodeURIComponent(location));
+      const data = await res.json();
+      if (data && data.lat) return data;
+      return null;
+    } catch {
+      return null;
+    }
   }
 
   function buildSearchUrl(type, location, lat, lng, maxPrice, radius) {
