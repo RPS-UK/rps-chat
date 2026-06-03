@@ -1,5 +1,7 @@
 (function () {
   const PROXY_URL = 'https://rps-chat.vercel.app/api/chat';
+  const GEOCODE_URL = 'https://rps-chat.vercel.app/api/geocode';
+  const SESSION_KEY = 'rayan_session';
 
   const TYPE_SLUGS = {
     'Restaurant': 'restaurants-for-sale',
@@ -10,7 +12,6 @@
 
   const css = `
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
-
     #rayan-btn {
       position: fixed; bottom: 28px; right: 28px; z-index: 99999;
       display: flex; align-items: center; gap: 10px;
@@ -20,28 +21,13 @@
       transition: transform 0.2s; box-shadow: 0 4px 16px rgba(42,82,94,0.35);
     }
     #rayan-btn:hover { transform: scale(1.03); }
-    #rayan-btn .r-av {
-      width: 38px; height: 38px; border-radius: 50%;
-      background: #ffbd4a; display: flex; align-items: center;
-      justify-content: center; flex-shrink: 0;
-    }
+    #rayan-btn .r-av { width: 38px; height: 38px; border-radius: 50%; background: #ffbd4a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     #rayan-btn .r-av span { font-size: 15px; font-weight: 600; color: #2a525e; font-family: 'Poppins', sans-serif; }
     #rayan-btn .r-name { font-size: 15px; font-weight: 600; color: #fff; font-family: 'Poppins', sans-serif; letter-spacing: 0.2px; line-height: 1; display: block; }
     #rayan-btn .r-sub { font-size: 10px; color: #a8c9d0; font-family: 'Poppins', sans-serif; font-weight: 300; letter-spacing: 0.3px; margin-top: 2px; display: block; }
     #rayan-btn .r-unread { position: absolute; top: -4px; right: -4px; width: 20px; height: 20px; border-radius: 50%; background: #e24b4a; color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; border: 2px solid #fff; }
-
-    #rayan-box {
-      position: fixed; bottom: 100px; right: 28px; z-index: 99999;
-      width: 360px; height: 560px; border-radius: 16px;
-      overflow: hidden; border: 0.5px solid #c8d8dc;
-      display: flex; flex-direction: column; background: #fff;
-      font-family: 'Poppins', sans-serif;
-      transform: scale(0.95) translateY(10px); opacity: 0;
-      transition: transform 0.25s, opacity 0.25s; pointer-events: none;
-      box-shadow: 0 8px 32px rgba(42,82,94,0.18);
-    }
+    #rayan-box { position: fixed; bottom: 100px; right: 28px; z-index: 99999; width: 360px; height: 560px; border-radius: 16px; overflow: hidden; border: 0.5px solid #c8d8dc; display: flex; flex-direction: column; background: #fff; font-family: 'Poppins', sans-serif; transform: scale(0.95) translateY(10px); opacity: 0; transition: transform 0.25s, opacity 0.25s; pointer-events: none; box-shadow: 0 8px 32px rgba(42,82,94,0.18); }
     #rayan-box.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
-
     .r-header { background: #2a525e; padding: 14px 16px; display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
     .r-header-av { width: 42px; height: 42px; border-radius: 50%; background: #ffbd4a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .r-header-av span { font-size: 16px; font-weight: 600; color: #2a525e; font-family: 'Poppins', sans-serif; }
@@ -50,7 +36,6 @@
     .r-online { width: 8px; height: 8px; border-radius: 50%; background: #4cdf6c; flex-shrink: 0; }
     .r-close { margin-left: auto; background: none; border: none; color: #a8c9d0; cursor: pointer; font-size: 20px; line-height: 1; padding: 0; }
     .r-close:hover { color: #fff; }
-
     .r-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 9px; background: #f2f6f7; }
     .r-msg { max-width: 86%; padding: 10px 14px; font-size: 13.5px; line-height: 1.6; font-family: 'Poppins', sans-serif; white-space: pre-wrap; }
     .r-msg.bot { background: #fff; color: #1a2e33; border-radius: 3px 14px 14px 14px; border: 0.5px solid #dde8ea; align-self: flex-start; font-weight: 400; }
@@ -59,13 +44,9 @@
     .r-msg.user { background: #2a525e; color: #fff; border-radius: 14px 3px 14px 14px; align-self: flex-end; font-weight: 400; }
     .r-msg.thinking { opacity: 0.5; font-style: italic; }
     .r-msg.hint { background: #fff8ec; color: #2a525e; border: 0.5px solid #ffbd4a; border-radius: 3px 14px 14px 14px; align-self: flex-start; font-size: 12px; font-weight: 300; font-style: italic; max-width: 90%; }
-
     .r-chips { display: flex; flex-direction: column; gap: 6px; align-self: stretch; }
     .r-chip { font-size: 13px; font-weight: 400; padding: 9px 14px; border-radius: 6px; border: 1px solid #ffbd4a; background: #fff; color: #2a525e; cursor: pointer; text-align: left; font-family: 'Poppins', sans-serif; transition: background 0.12s; letter-spacing: 0.1px; }
     .r-chip:hover { background: #fff8ec; }
-    .r-chip.secondary { border-color: #c8d8dc; color: #5a7a82; font-size: 12px; }
-    .r-chip.secondary:hover { background: #f2f6f7; }
-
     .r-footer { padding: 11px 13px; border-top: 0.5px solid #dde8ea; background: #fff; display: flex; gap: 8px; align-items: center; }
     .r-footer input { flex: 1; border: 0.5px solid #c8d8dc; border-radius: 6px; padding: 9px 12px; font-size: 13px; color: #1a2e33; background: #f2f6f7; font-family: 'Poppins', sans-serif; font-weight: 400; outline: none; }
     .r-footer input:focus { border-color: #2a525e; background: #fff; }
@@ -73,7 +54,6 @@
     .r-footer button:hover { background: #1e3d47; }
     .r-footer button:disabled { opacity: 0.4; cursor: default; }
     .r-powered { text-align: center; font-size: 10px; color: #bbb; padding: 6px; background: #fff; letter-spacing: 0.4px; font-family: 'Poppins', sans-serif; font-weight: 300; border-top: 0.5px solid #f0ece3; }
-
     @media (max-width: 420px) {
       #rayan-box { width: calc(100vw - 20px); right: 10px; bottom: 90px; }
       #rayan-btn { right: 10px; bottom: 16px; }
@@ -90,18 +70,12 @@
   wrap.innerHTML = `
     <button id="rayan-btn" aria-label="Chat with Rayan">
       <div class="r-av"><span>R</span></div>
-      <div>
-        <span class="r-name">Rayan</span>
-        <span class="r-sub">Your property advisor</span>
-      </div>
+      <div><span class="r-name">Rayan</span><span class="r-sub">Your property advisor</span></div>
     </button>
     <div id="rayan-box" role="dialog" aria-label="Rayan — RPS Assistant">
       <div class="r-header">
         <div class="r-header-av"><span>R</span></div>
-        <div>
-          <p class="r-header-name">Rayan</p>
-          <p class="r-header-sub">Restaurant Property Sellers</p>
-        </div>
+        <div><p class="r-header-name">Rayan</p><p class="r-header-sub">Restaurant Property Sellers</p></div>
         <div class="r-online"></div>
         <button class="r-close" id="rayan-close" aria-label="Close">&#x2715;</button>
       </div>
@@ -115,12 +89,40 @@
   `;
   document.body.appendChild(wrap);
 
-  let history = [];
+  // ── Session persistence across pages ──────────────────────────────────────
+  function loadSession() {
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY);
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  }
+
+  function saveSession() {
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        history,
+        state,
+        pendingType,
+        pendingPrice,
+        msgData
+      }));
+    } catch {}
+  }
+
+  function clearSession() {
+    try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+  }
+
+  // ── State ─────────────────────────────────────────────────────────────────
+  let session = loadSession();
+  let history = session ? session.history : [];
+  let state = session ? session.state : 'greeting';
+  let pendingType = session ? session.pendingType : '';
+  let pendingPrice = session ? session.pendingPrice : 0;
+  let msgData = session ? session.msgData : []; // stores rendered messages for replay
   let isOpen = false;
   let unread = 0;
-  let state = 'greeting';
-  let pendingType = '';
-  let pendingPrice = 0;
+  let leadCaptured = false;
 
   const box = document.getElementById('rayan-box');
   const msgs = document.getElementById('rayan-msgs');
@@ -128,6 +130,7 @@
   const sendBtn = document.getElementById('rayan-send');
   const btn = document.getElementById('rayan-btn');
 
+  // ── Toggle ────────────────────────────────────────────────────────────────
   function toggleChat() {
     isOpen = !isOpen;
     box.classList.toggle('open', isOpen);
@@ -150,14 +153,15 @@
 
   function clearChips() { document.querySelectorAll('.r-chips').forEach(c => c.remove()); }
 
-  function addMsg(text, role, links) {
+  // ── Render a message ──────────────────────────────────────────────────────
+  function renderMsg(data) {
     clearChips();
     const d = document.createElement('div');
-    d.className = 'r-msg ' + role;
+    d.className = 'r-msg ' + data.role;
     d.style.whiteSpace = 'pre-wrap';
-    d.textContent = text;
-    if (links && links.length) {
-      links.forEach(l => {
+    d.textContent = data.text;
+    if (data.links && data.links.length) {
+      data.links.forEach(l => {
         const a = document.createElement('a');
         a.href = l.url; a.target = '_blank'; a.rel = 'noopener';
         a.textContent = l.label;
@@ -169,6 +173,13 @@
     msgs.scrollTop = msgs.scrollHeight;
   }
 
+  function addMsg(text, role, links) {
+    const data = { text, role, links: links || [] };
+    msgData.push(data);
+    renderMsg(data);
+    saveSession();
+  }
+
   function addHint(text) {
     const d = document.createElement('div');
     d.className = 'r-msg hint';
@@ -177,13 +188,12 @@
     msgs.scrollTop = msgs.scrollHeight;
   }
 
-  function addChips(options, secondary) {
+  function addChips(options) {
     const w = document.createElement('div');
     w.className = 'r-chips';
     options.forEach(o => {
       const b = document.createElement('button');
-      b.className = 'r-chip' + (secondary ? ' secondary' : '');
-      b.textContent = o;
+      b.className = 'r-chip'; b.textContent = o;
       b.onclick = () => { w.remove(); handleInput(o); };
       w.appendChild(b);
     });
@@ -191,18 +201,35 @@
     msgs.scrollTop = msgs.scrollHeight;
   }
 
-  // Geocode via RPS proxy to avoid CORS issues
-  async function geocode(location) {
-    try {
-      const res = await fetch(PROXY_URL.replace('/api/chat', '/api/geocode') + '?q=' + encodeURIComponent(location));
-      const data = await res.json();
-      if (data && data.lat) return data;
-      return null;
-    } catch {
-      return null;
+  // ── Restore session messages on page load ─────────────────────────────────
+  function restoreSession() {
+    if (msgData && msgData.length) {
+      msgData.forEach(d => renderMsg(d));
+      msgs.scrollTop = msgs.scrollHeight;
+      bumpUnread();
+    } else {
+      showGreeting();
     }
   }
 
+  function showGreeting() {
+    addMsg("Welcome to Restaurant Property Sellers. I'm Rayan, your property advisor.\n\nHow can I help you today? Simply type your requirement or choose an option below.", 'bot');
+    addHint('e.g. "Restaurant in Ealing under £100k" or "I want to sell my cafe"');
+    addChips(['I am looking to buy', 'I am thinking of selling', 'I am a landlord', 'Franchisor', 'Franchisee']);
+    bumpUnread();
+  }
+
+  // ── Geocoding ─────────────────────────────────────────────────────────────
+  async function geocode(location) {
+    try {
+      const res = await fetch(GEOCODE_URL + '?q=' + encodeURIComponent(location));
+      const data = await res.json();
+      if (data && data.lat) return data;
+      return null;
+    } catch { return null; }
+  }
+
+  // ── URL builder ───────────────────────────────────────────────────────────
   function buildSearchUrl(type, location, lat, lng, maxPrice, radius) {
     const base = 'https://restaurantpropertysellers.com/search-results/';
     const p = new URLSearchParams();
@@ -216,6 +243,7 @@
     return base + '?' + p.toString();
   }
 
+  // ── Parse free text ───────────────────────────────────────────────────────
   function parseRequest(text) {
     const tl = text.toLowerCase();
     const types = { restaurant: 'Restaurant', cafe: 'Cafe', coffee: 'Cafe', takeaway: 'Takeaway', 'take away': 'Takeaway', pub: 'Pub', bar: 'Pub' };
@@ -235,12 +263,12 @@
       'swiss cottage', 'brixton', 'peckham', 'lewisham', 'greenwich', 'woolwich',
       'slough', 'watford', 'enfield', 'barnet', 'edgware', 'walthamstow',
       'leyton', 'bethnal green', 'shoreditch', 'dalston', 'clapham', 'balham',
-      'streatham', 'norwood', 'sutton', 'morden', 'ruislip', 'northolt',
-      'perivale', 'hanwell', 'brentford', 'feltham', 'ashford', 'heston'
+      'streatham', 'sutton', 'morden', 'ruislip', 'northolt', 'perivale',
+      'hanwell', 'brentford', 'feltham', 'heston', 'hayes', 'eastcote',
+      'pinner', 'stanmore', 'wealdstone', 'alperton', 'sudbury', 'hendon'
     ];
 
     let type = '', location = '', maxPrice = 0;
-
     for (const [k, v] of Object.entries(types)) { if (tl.includes(k)) { type = v; break; } }
     for (const area of areas) {
       if (tl.includes(area)) {
@@ -249,23 +277,22 @@
       }
     }
     if (!location) {
-      if (tl.includes('west london')) location = 'West London';
-      else if (tl.includes('north west london')) location = 'North West London';
+      if (tl.includes('north west london')) location = 'North West London';
+      else if (tl.includes('west london')) location = 'West London';
       else if (tl.includes('north london')) location = 'North London';
       else if (tl.includes('central london')) location = 'Central London';
       else if (tl.includes('east london')) location = 'East London';
       else if (tl.includes('south london')) location = 'South London';
     }
-
     for (const [k, v] of Object.entries(budgetMap)) { if (tl.includes(k)) { maxPrice = v; break; } }
     if (!maxPrice) {
       const m = tl.match(/£\s*(\d[\d,]*)/);
       if (m) maxPrice = parseInt(m[1].replace(/,/g, ''));
     }
-
     return { type, location, maxPrice };
   }
 
+  // ── Buyer search ──────────────────────────────────────────────────────────
   async function processBuyerRequest(text) {
     const { type, location, maxPrice } = parseRequest(text);
 
@@ -275,28 +302,32 @@
       state = 'buyer_location';
       pendingType = type;
       pendingPrice = maxPrice;
+      saveSession();
       return;
     }
 
-    addMsg('Searching for listings within 3 miles of ' + location + '...', 'bot');
+    addMsg('Searching for listings near ' + location + '...', 'bot');
 
     const geo = await geocode(location);
     const lat = geo ? geo.lat : null;
     const lng = geo ? geo.lng : null;
-    const formattedLocation = geo ? geo.formatted.split(',')[0] : location;
+    const formattedLocation = geo ? geo.formatted : location;
 
-    clearChips();
+    // Remove the "Searching..." message
     const lastMsg = msgs.lastElementChild;
-    if (lastMsg && lastMsg.textContent.includes('Searching')) lastMsg.remove();
+    if (lastMsg && lastMsg.textContent.includes('Searching')) {
+      lastMsg.remove();
+      msgData.pop();
+    }
 
     const exactUrl = buildSearchUrl(type, formattedLocation, lat, lng, maxPrice, '3');
     const broaderUrl = buildSearchUrl(type, formattedLocation, lat, lng, maxPrice, '6');
-    const similarUrl = buildSearchUrl('', formattedLocation, lat, lng, 0, '5');
-
-    const label = [type || 'Businesses', 'within 3 miles of', formattedLocation, maxPrice ? '— under £' + maxPrice.toLocaleString() : ''].filter(Boolean).join(' ');
+    const similarUrl = buildSearchUrl('', formattedLocation, lat, lng, 0, '6');
+    const typeLabel = type || 'Businesses';
+    const priceLabel = maxPrice ? ' — under £' + maxPrice.toLocaleString() : '';
 
     addMsg('Here are listings matching your requirement.', 'bot', [
-      { url: exactUrl, label: 'View ' + label.replace('within 1 mile', 'within 3 miles') },
+      { url: exactUrl, label: 'View ' + typeLabel + ' within 3 miles of ' + formattedLocation + priceLabel },
       { url: broaderUrl, label: 'Expand to 6 miles (more results)', secondary: true },
       { url: similarUrl, label: 'See all listings near ' + formattedLocation, secondary: true }
     ]);
@@ -304,14 +335,19 @@
     setTimeout(() => {
       addMsg('To receive alerts when new matching listings are added, may I take your name, email and phone number?', 'bot');
       state = 'capture';
+      saveSession();
     }, 300);
   }
 
+  // ── AI call ───────────────────────────────────────────────────────────────
   async function callAI(text) {
     history.push({ role: 'user', content: text });
-    const d = document.createElement('div');
-    d.className = 'r-msg bot thinking'; d.id = 'rayan-thinking'; d.textContent = '...';
-    msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
+    const thinking = document.createElement('div');
+    thinking.className = 'r-msg bot thinking';
+    thinking.id = 'rayan-thinking';
+    thinking.textContent = '...';
+    msgs.appendChild(thinking);
+    msgs.scrollTop = msgs.scrollHeight;
 
     try {
       const res = await fetch(PROXY_URL, {
@@ -322,14 +358,49 @@
       const data = await res.json();
       const raw = data.content?.find(b => b.type === 'text')?.text || 'Sorry, something went wrong.';
       const clean = raw.replace(/LEAD_DATA:\s*\{[\s\S]*?\}/, '').trim();
+
       document.getElementById('rayan-thinking')?.remove();
       history.push({ role: 'assistant', content: raw });
+
       clearChips();
-      const el = document.createElement('div');
-      el.className = 'r-msg bot'; el.style.whiteSpace = 'pre-wrap';
-      const linked = clean.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-      el.innerHTML = linked;
-      msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight;
+      const linked = clean.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, (_, label, url) => {
+        return `__LINK__${label}__URL__${url}__END__`;
+      });
+
+      const parts = linked.split(/__LINK__|__END__/);
+      const msgEl = document.createElement('div');
+      msgEl.className = 'r-msg bot';
+      msgEl.style.whiteSpace = 'pre-wrap';
+
+      const links = [];
+      let plainText = '';
+      parts.forEach(part => {
+        if (part.includes('__URL__')) {
+          const [label, url] = part.split('__URL__');
+          links.push({ url, label });
+        } else {
+          plainText += part;
+        }
+      });
+
+      msgEl.textContent = plainText.trim();
+      links.forEach(l => {
+        const a = document.createElement('a');
+        a.href = l.url; a.target = '_blank'; a.rel = 'noopener';
+        a.textContent = l.label;
+        msgEl.appendChild(a);
+      });
+
+      msgs.appendChild(msgEl);
+      msgs.scrollTop = msgs.scrollHeight;
+      msgData.push({ text: plainText.trim(), role: 'bot', links });
+
+      if (raw.includes('LEAD_DATA:')) {
+        leadCaptured = true;
+        state = 'done';
+      }
+
+      saveSession();
       bumpUnread();
     } catch {
       document.getElementById('rayan-thinking')?.remove();
@@ -339,58 +410,72 @@
     inp.focus();
   }
 
+  // ── Main input handler ────────────────────────────────────────────────────
   async function handleInput(text) {
     clearChips();
     addMsg(text, 'user');
     const tl = text.toLowerCase();
 
-    if (state === 'buyer_location') {
-      const location = text.trim();
-      const geo = await geocode(location);
-      const lat = geo ? geo.lat : null;
-      const lng = geo ? geo.lng : null;
-      const formattedLocation = geo ? geo.formatted.split(',')[0] : location;
-      const exactUrl = buildSearchUrl(pendingType, formattedLocation, lat, lng, pendingPrice, '3');
-      const broaderUrl = buildSearchUrl(pendingType, formattedLocation, lat, lng, pendingPrice, '6');
-      const similarUrl = buildSearchUrl('', formattedLocation, lat, lng, 0, '5');
-      setTimeout(() => {
-        addMsg('Here are listings near ' + formattedLocation + '.', 'bot', [
-          { url: exactUrl, label: 'View listings within 3 miles of ' + formattedLocation },
-          { url: broaderUrl, label: 'Expand to 6 miles (more results)', secondary: true },
-          { url: similarUrl, label: 'See all listings near ' + formattedLocation, secondary: true }
-        ]);
-        addMsg('May I take your name, email and phone number to send you alerts for new listings?', 'bot');
-        state = 'capture';
-      }, 400);
+    if (state === 'done') {
+      addMsg('Your enquiry has been noted. Our team will be in touch shortly.', 'bot');
       return;
     }
 
-    if (state === 'capture' || state === 'seller' || state === 'landlord' || state === 'franchisor' || state === 'franchisee') {
+    if (state === 'capture') {
       sendBtn.disabled = true;
       callAI(text);
       return;
+    }
+
+    if (state === 'buyer_location') {
+      const location = text.trim();
+      addMsg('Searching for listings near ' + location + '...', 'bot');
+      const geo = await geocode(location);
+      const lat = geo ? geo.lat : null;
+      const lng = geo ? geo.lng : null;
+      const formattedLocation = geo ? geo.formatted : location;
+      const lastMsg = msgs.lastElementChild;
+      if (lastMsg && lastMsg.textContent.includes('Searching')) { lastMsg.remove(); msgData.pop(); }
+      const exactUrl = buildSearchUrl(pendingType, formattedLocation, lat, lng, pendingPrice, '3');
+      const broaderUrl = buildSearchUrl(pendingType, formattedLocation, lat, lng, pendingPrice, '6');
+      const similarUrl = buildSearchUrl('', formattedLocation, lat, lng, 0, '6');
+      addMsg('Here are listings near ' + formattedLocation + '.', 'bot', [
+        { url: exactUrl, label: 'View listings within 3 miles of ' + formattedLocation },
+        { url: broaderUrl, label: 'Expand to 6 miles (more results)', secondary: true },
+        { url: similarUrl, label: 'See all listings near ' + formattedLocation, secondary: true }
+      ]);
+      setTimeout(() => {
+        addMsg('May I take your name, email and phone number to send you alerts for new listings?', 'bot');
+        state = 'capture'; saveSession();
+      }, 300);
+      return;
+    }
+
+    if (state === 'seller' || state === 'landlord' || state === 'franchisor' || state === 'franchisee') {
+      sendBtn.disabled = true; callAI(text); return;
     }
 
     if (tl === 'i am looking to buy') {
       state = 'buyer';
-      setTimeout(() => {
-        addMsg('Please describe what you are looking for and I will find matching listings for you.', 'bot');
-        addHint('e.g. "Restaurant in Ealing, budget £100,000"');
-      }, 350);
-    } else if (tl === 'i am thinking of selling' || tl.includes('sell')) {
-      state = 'seller'; sendBtn.disabled = true; callAI(text);
+      addMsg('Please describe what you are looking for and I will find matching listings for you.', 'bot');
+      addHint('e.g. "Restaurant in Ealing, budget £100,000"');
+      saveSession();
+    } else if (tl === 'i am thinking of selling' || (tl.includes('sell') && !tl.includes('seller'))) {
+      state = 'seller'; sendBtn.disabled = true; history.push({ role: 'user', content: text }); callAI(text);
     } else if (tl === 'i am a landlord' || tl.includes('landlord')) {
       state = 'landlord'; sendBtn.disabled = true; callAI(text);
-    } else if (tl === 'franchisor' || tl.includes('franchisor')) {
+    } else if (tl === 'franchisor' || (tl.includes('franchisor') && !tl.includes('franchisee'))) {
       state = 'franchisor'; sendBtn.disabled = true; callAI(text);
     } else if (tl === 'franchisee' || tl.includes('franchisee')) {
       state = 'franchisee'; sendBtn.disabled = true; callAI(text);
-    } else if (tl.includes('buy') || tl.includes('looking') || tl.includes('restaurant') || tl.includes('cafe') || tl.includes('takeaway') || tl.includes('pub') || tl.includes('bar')) {
+    } else if (
+      tl.includes('buy') || tl.includes('looking') || tl.includes('restaurant') ||
+      tl.includes('cafe') || tl.includes('takeaway') || tl.includes('pub') || tl.includes('bar')
+    ) {
       state = 'buyer';
       processBuyerRequest(text);
     } else {
-      sendBtn.disabled = true;
-      callAI(text);
+      sendBtn.disabled = true; callAI(text);
     }
   }
 
@@ -406,11 +491,7 @@
   sendBtn.addEventListener('click', send);
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
 
-  setTimeout(() => {
-    addMsg("Welcome to Restaurant Property Sellers. I'm Rayan, your property advisor.\n\nHow can I help you today? Simply type your requirement or choose an option below.", 'bot');
-    addHint('e.g. "Restaurant in Ealing under £100k" or "I want to sell my cafe"');
-    addChips(['I am looking to buy', 'I am thinking of selling', 'I am a landlord', 'Franchisor', 'Franchisee']);
-    bumpUnread();
-  }, 800);
+  // ── Init ──────────────────────────────────────────────────────────────────
+  setTimeout(() => restoreSession(), 800);
 
 })();
