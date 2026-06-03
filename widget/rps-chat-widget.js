@@ -70,7 +70,7 @@
   wrap.innerHTML = `
     <button id="rayan-btn" aria-label="Chat with Rayan">
       <div class="r-av"><span>R</span></div>
-      <div><span class="r-name">Rayan</span><span class="r-sub">Your property advisor</span></div>
+      <div><span class="r-name">Rayan</span><span class="r-sub">Your sales advisor</span></div>
     </button>
     <div id="rayan-box" role="dialog" aria-label="Rayan — RPS Assistant">
       <div class="r-header">
@@ -225,7 +225,7 @@
 
   function showGreeting() {
     state = 'greeting';
-    addMsg("Welcome to Restaurant Property Sellers. I'm Rayan, your property advisor.\n\nHow can I help you today? Simply type your requirement or choose an option below.", 'bot');
+    addMsg("Welcome to Restaurant Property Sellers. I'm Rayan, your sales advisor.\n\nHow can I help you today? Simply type your requirement or choose an option below.", 'bot');
     addHint('e.g. "Restaurant in Ealing under £100k" or "I want to sell my cafe"');
     addChips(['I am looking to buy', 'I am thinking of selling', 'I am a landlord', 'Franchisor', 'Franchisee']);
     saveSession();
