@@ -207,15 +207,28 @@
       msgData.forEach(d => renderMsg(d));
       msgs.scrollTop = msgs.scrollHeight;
       bumpUnread();
+      // Restore interactive elements based on current state
+      if (state === 'greeting' || !state) {
+        addHint('e.g. "Restaurant in Ealing under £100k" or "I want to sell my cafe"');
+        addChips(['I am looking to buy', 'I am thinking of selling', 'I am a landlord', 'Franchisor', 'Franchisee']);
+      } else if (state === 'buyer') {
+        addHint('e.g. "Restaurant in Ealing, budget £100,000"');
+      } else if (state === 'buyer_location') {
+        addHint('e.g. "Ealing" or "West London"');
+      } else if (state === 'capture') {
+        addHint('Please share your name, email and phone number.');
+      }
     } else {
       showGreeting();
     }
   }
 
   function showGreeting() {
+    state = 'greeting';
     addMsg("Welcome to Restaurant Property Sellers. I'm Rayan, your property advisor.\n\nHow can I help you today? Simply type your requirement or choose an option below.", 'bot');
     addHint('e.g. "Restaurant in Ealing under £100k" or "I want to sell my cafe"');
     addChips(['I am looking to buy', 'I am thinking of selling', 'I am a landlord', 'Franchisor', 'Franchisee']);
+    saveSession();
     bumpUnread();
   }
 
