@@ -83,10 +83,10 @@ WHY CHOOSE RPS:
 - No Sale No Fee — you only pay when we find a buyer
 - No upfront marketing or advertising costs
 - No sole agency — you are not locked in
-- Fee: 5% of premium achieved or £5,500 + VAT whichever is greater
+- Fee: 5% of premium achieved or £6,000 + VAT whichever is greater
 - Freehold fee: 1-3% of agreed price, minimum £8,500 + VAT
 - Free confidential valuation — no obligation
-- Listed on Rightmove, Zoopla, Daltons, RightBiz and BusinessesForSale
+- Listed on several other platforms
 - Database of 8,000+ registered buyers
 - 15+ years combined experience in hospitality
 
