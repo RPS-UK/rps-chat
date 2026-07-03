@@ -71,7 +71,7 @@
     .r-powered { text-align: center; font-size: 10px; color: #bbb; padding: 6px; background: #fff; letter-spacing: 0.4px; font-family: 'Poppins', sans-serif; font-weight: 300; border-top: 0.5px solid #f0ece3; flex-shrink: 0; }
 
     @media (max-width: 768px) {
-      #rayan-btn { right: 14px; bottom: 14px; padding: 8px 12px 8px 8px; }
+      #rayan-btn { right: 14px; bottom: 90px; padding: 8px 12px 8px 8px; }
       #rayan-btn .r-av { width: 32px; height: 32px; }
       #rayan-btn .r-av span { font-size: 12px; }
       #rayan-btn .r-name { font-size: 12px; }
