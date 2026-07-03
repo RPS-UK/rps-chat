@@ -26,7 +26,7 @@
     #rayan-btn .r-name { font-size: 15px; font-weight: 600; color: #fff; font-family: 'Poppins', sans-serif; letter-spacing: 0.2px; line-height: 1; display: block; }
     #rayan-btn .r-sub { font-size: 10px; color: #a8c9d0; font-family: 'Poppins', sans-serif; font-weight: 300; letter-spacing: 0.3px; margin-top: 2px; display: block; }
     #rayan-btn .r-unread { position: absolute; top: -4px; right: -4px; width: 20px; height: 20px; border-radius: 50%; background: #e24b4a; color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; border: 2px solid #fff; }
-    #rayan-box { position: fixed; bottom: 100px; right: 28px; z-index: 99999; width: 360px; height: 560px; border-radius: 16px; overflow: hidden; border: 0.5px solid #c8d8dc; display: flex; flex-direction: column; background: #fff; font-family: 'Poppins', sans-serif; transform: scale(0.95) translateY(10px); opacity: 0; transition: transform 0.25s, opacity 0.25s; pointer-events: none; box-shadow: 0 8px 32px rgba(42,82,94,0.18); }
+    #rayan-box { position: fixed; bottom: 100px; right: 28px; z-index: 99999; width: 380px; height: 620px; border-radius: 16px; overflow: hidden; border: 0.5px solid #c8d8dc; display: flex; flex-direction: column; background: #fff; font-family: 'Poppins', sans-serif; transform: scale(0.95) translateY(10px); opacity: 0; transition: transform 0.25s, opacity 0.25s; pointer-events: none; box-shadow: 0 8px 32px rgba(42,82,94,0.18); }
     #rayan-box.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
     .r-header { background: #2a525e; padding: 14px 16px; display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
     .r-header-av { width: 42px; height: 42px; border-radius: 50%; background: #ffbd4a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -215,7 +215,7 @@
       });
     }
     msgs.appendChild(d);
-    msgs.scrollTop = msgs.scrollHeight;
+    if (msgData.length > 1) msgs.scrollTop = msgs.scrollHeight;
   }
 
   function addMsg(text, role, links) {
@@ -250,7 +250,7 @@
   function restoreSession() {
     if (msgData && msgData.length) {
       msgData.forEach(d => renderMsg(d));
-      msgs.scrollTop = msgs.scrollHeight;
+      msgs.scrollTop = 0;
       bumpUnread();
       // Restore interactive elements based on current state
       if (state === 'greeting' || !state) {
@@ -270,7 +270,7 @@
 
   function showGreeting() {
     state = 'greeting';
-    addMsg("Welcome to Restaurant Property Sellers. I'm Rayan, your sales advisor.\n\nHow can I help you today? Simply type your requirement or choose an option below.", 'bot');
+    addMsg("Hi, I'm Rayan — your sales advisor at Restaurant Property Sellers. How can I help you today?", 'bot');
     addHint('e.g. "Restaurant in Ealing under £100k" or "I want to sell my cafe"');
     addChips(['I am looking to buy', 'I am thinking of selling', 'I am a landlord', 'Franchisor', 'Franchisee']);
     saveSession();
@@ -550,6 +550,6 @@
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
 
   // ── Init ──────────────────────────────────────────────────────────────────
-  setTimeout(() => restoreSession(), 800);
+  setTimeout(() => { restoreSession(); setTimeout(() => { msgs.scrollTop = 0; }, 50); }, 800);
 
 })();
