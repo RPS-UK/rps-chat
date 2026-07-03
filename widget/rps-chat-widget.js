@@ -357,8 +357,27 @@
       'slough', 'watford', 'enfield', 'barnet', 'edgware', 'walthamstow',
       'leyton', 'bethnal green', 'shoreditch', 'dalston', 'clapham', 'balham',
       'streatham', 'sutton', 'morden', 'ruislip', 'northolt', 'perivale',
-      'hanwell', 'brentford', 'feltham', 'heston', 'hayes', 'eastcote',
-      'pinner', 'stanmore', 'wealdstone', 'alperton', 'sudbury', 'hendon'
+      'hanwell', 'brentford', 'feltham', 'heston', 'eastcote', 'holborn',
+      'pinner', 'stanmore', 'wealdstone', 'alperton', 'sudbury', 'hendon',
+      'clerkenwell', 'farringdon', 'barbican', 'aldgate', 'whitechapel',
+      'stepney', 'poplar', 'canary wharf', 'isle of dogs', 'bermondsey',
+      'southwark', 'vauxhall', 'stockwell', 'oval', 'kennington',
+      'elephant and castle', 'borough', 'london bridge', 'bank', 'moorgate',
+      'liverpool street', 'brick lane', 'spitalfields', 'mile end', 'bow',
+      'forest gate', 'manor park', 'seven kings', 'goodmayes', 'chadwell heath',
+      'kingsbury', 'queensbury', 'burnt oak', 'colindale', 'brent cross',
+      'golders green', 'finchley', 'east finchley', 'highgate', 'archway',
+      'tufnell park', 'kentish town', 'chalk farm', 'belsize park', 'hampstead',
+      'cricklewood', 'willesden', 'harlesden', 'kensal green', 'ladbroke grove',
+      'notting hill', 'bayswater', 'paddington', 'marylebone', 'mayfair',
+      'soho', 'covent garden', 'strand', 'waterloo', 'lambeth', 'battersea',
+      'wandsworth', 'putney', 'roehampton', 'mortlake', 'kew', 'barnes',
+      'shepherd's bush', 'white city', 'wood lane', 'latimer road',
+      'tottenham', 'wood green', 'palmers green', 'winchmore hill', 'southgate',
+      'oakwood', 'cockfosters', 'new southgate', 'friern barnet', 'new barnet',
+      'east barnet', 'hadley wood', 'potters bar', 'waltham cross',
+      'cheshunt', 'broxbourne', 'hertford', 'upminster', 'hornchurch',
+      'dagenham', 'rainham', 'purfleet', 'grays', 'tilbury'
     ];
 
     let type = '', location = '', maxPrice = 0;
@@ -522,8 +541,11 @@
 
     if (state === 'buyer_location') {
       const location = text.trim();
-      addMsg('Searching for listings near ' + location + '...', 'bot');
-      const geo = await geocode(location);
+      // Also try to parse from the text in case they typed a full sentence
+      const parsed = parseRequest(text);
+      const finalLocation = parsed.location || location;
+      addMsg('Searching for listings near ' + finalLocation + '...', 'bot');
+      const geo = await geocode(finalLocation);
       const lat = geo ? geo.lat : null;
       const lng = geo ? geo.lng : null;
       const formattedLocation = geo ? geo.formatted : location;
