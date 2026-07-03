@@ -372,7 +372,7 @@
       'notting hill', 'bayswater', 'paddington', 'marylebone', 'mayfair',
       'soho', 'covent garden', 'strand', 'waterloo', 'lambeth', 'battersea',
       'wandsworth', 'putney', 'roehampton', 'mortlake', 'kew', 'barnes',
-      'shepherd's bush', 'white city', 'wood lane', 'latimer road',
+      'shepherds bush', 'white city', 'wood lane', 'latimer road',
       'tottenham', 'wood green', 'palmers green', 'winchmore hill', 'southgate',
       'oakwood', 'cockfosters', 'new southgate', 'friern barnet', 'new barnet',
       'east barnet', 'hadley wood', 'potters bar', 'waltham cross',
