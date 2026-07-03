@@ -12,22 +12,34 @@
 
   const css = `
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
     #rayan-btn {
-      position: fixed; bottom: 28px; right: 28px; z-index: 99999;
+      position: fixed; bottom: 28px; right: 28px; z-index: 2147483647;
       display: flex; align-items: center; gap: 10px;
       background: #2a525e; border: 1.5px solid #ffbd4a;
       border-radius: 40px; padding: 10px 18px 10px 10px;
       cursor: pointer; font-family: 'Poppins', sans-serif;
-      transition: transform 0.2s; box-shadow: 0 4px 16px rgba(42,82,94,0.35);
+      box-shadow: 0 4px 16px rgba(42,82,94,0.35);
     }
-    #rayan-btn:hover { transform: scale(1.03); }
     #rayan-btn .r-av { width: 38px; height: 38px; border-radius: 50%; background: #ffbd4a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     #rayan-btn .r-av span { font-size: 15px; font-weight: 600; color: #2a525e; font-family: 'Poppins', sans-serif; }
     #rayan-btn .r-name { font-size: 15px; font-weight: 600; color: #fff; font-family: 'Poppins', sans-serif; letter-spacing: 0.2px; line-height: 1; display: block; }
     #rayan-btn .r-sub { font-size: 10px; color: #a8c9d0; font-family: 'Poppins', sans-serif; font-weight: 300; letter-spacing: 0.3px; margin-top: 2px; display: block; }
     #rayan-btn .r-unread { position: absolute; top: -4px; right: -4px; width: 20px; height: 20px; border-radius: 50%; background: #e24b4a; color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; border: 2px solid #fff; }
-    #rayan-box { position: fixed; bottom: 100px; right: 28px; z-index: 99999; width: 380px; height: 620px; border-radius: 16px; overflow: hidden; border: 0.5px solid #c8d8dc; display: flex; flex-direction: column; background: #fff; font-family: 'Poppins', sans-serif; transform: scale(0.95) translateY(10px); opacity: 0; transition: transform 0.25s, opacity 0.25s; pointer-events: none; box-shadow: 0 8px 32px rgba(42,82,94,0.18); }
-    #rayan-box.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
+
+    #rayan-box {
+      position: fixed; bottom: 100px; right: 28px; z-index: 2147483646;
+      width: 360px; height: 600px;
+      border-radius: 16px; overflow: hidden;
+      border: 0.5px solid #c8d8dc;
+      display: flex; flex-direction: column;
+      background: #fff; font-family: 'Poppins', sans-serif;
+      box-shadow: 0 8px 32px rgba(42,82,94,0.18);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    #rayan-box.open { opacity: 1; pointer-events: all; }
+
     .r-header { background: #2a525e; padding: 14px 16px; display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
     .r-header-av { width: 42px; height: 42px; border-radius: 50%; background: #ffbd4a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .r-header-av span { font-size: 16px; font-weight: 600; color: #2a525e; font-family: 'Poppins', sans-serif; }
@@ -36,7 +48,8 @@
     .r-online { width: 8px; height: 8px; border-radius: 50%; background: #4cdf6c; flex-shrink: 0; }
     .r-close { margin-left: auto; background: none; border: none; color: #a8c9d0; cursor: pointer; font-size: 20px; line-height: 1; padding: 0; }
     .r-close:hover { color: #fff; }
-    .r-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 9px; background: #f2f6f7; }
+
+    .r-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 9px; background: #f2f6f7; min-height: 0; }
     .r-msg { max-width: 86%; padding: 10px 14px; font-size: 13.5px; line-height: 1.6; font-family: 'Poppins', sans-serif; white-space: pre-wrap; }
     .r-msg.bot { background: #fff; color: #1a2e33; border-radius: 3px 14px 14px 14px; border: 0.5px solid #dde8ea; align-self: flex-start; font-weight: 400; }
     .r-msg.bot a { color: #ffbd4a; font-weight: 500; text-decoration: none; display: block; margin-top: 6px; font-size: 13px; }
@@ -44,74 +57,44 @@
     .r-msg.user { background: #2a525e; color: #fff; border-radius: 14px 3px 14px 14px; align-self: flex-end; font-weight: 400; }
     .r-msg.thinking { opacity: 0.5; font-style: italic; }
     .r-msg.hint { background: #fff8ec; color: #2a525e; border: 0.5px solid #ffbd4a; border-radius: 3px 14px 14px 14px; align-self: flex-start; font-size: 12px; font-weight: 300; font-style: italic; max-width: 90%; }
+
     .r-chips { display: flex; flex-direction: column; gap: 6px; align-self: stretch; }
     .r-chip { font-size: 13px; font-weight: 400; padding: 9px 14px; border-radius: 6px; border: 1px solid #ffbd4a; background: #fff; color: #2a525e; cursor: pointer; text-align: left; font-family: 'Poppins', sans-serif; transition: background 0.12s; letter-spacing: 0.1px; }
     .r-chip:hover { background: #fff8ec; }
-    .r-footer { padding: 11px 13px; border-top: 0.5px solid #dde8ea; background: #fff; display: flex; gap: 8px; align-items: center; }
+
+    .r-footer { padding: 11px 13px; border-top: 0.5px solid #dde8ea; background: #fff; display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
     .r-footer input { flex: 1; border: 0.5px solid #c8d8dc; border-radius: 6px; padding: 9px 12px; font-size: 13px; color: #1a2e33; background: #f2f6f7; font-family: 'Poppins', sans-serif; font-weight: 400; outline: none; }
     .r-footer input:focus { border-color: #2a525e; background: #fff; }
     .r-footer button { background: #2a525e; color: #ffbd4a; border: none; border-radius: 6px; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px; }
     .r-footer button:hover { background: #1e3d47; }
     .r-footer button:disabled { opacity: 0.4; cursor: default; }
-    .r-powered { text-align: center; font-size: 10px; color: #bbb; padding: 6px; background: #fff; letter-spacing: 0.4px; font-family: 'Poppins', sans-serif; font-weight: 300; border-top: 0.5px solid #f0ece3; }
+    .r-powered { text-align: center; font-size: 10px; color: #bbb; padding: 6px; background: #fff; letter-spacing: 0.4px; font-family: 'Poppins', sans-serif; font-weight: 300; border-top: 0.5px solid #f0ece3; flex-shrink: 0; }
+
     @media (max-width: 768px) {
-      #rayan-btn {
-        right: 14px !important;
-        bottom: 14px !important;
-        padding: 8px 14px 8px 8px !important;
-      }
-      #rayan-btn .r-av { width: 34px !important; height: 34px !important; }
-      #rayan-btn .r-av span { font-size: 13px !important; }
-      #rayan-btn .r-name { font-size: 13px !important; }
-      #rayan-btn .r-sub { display: none !important; }
+      #rayan-btn { right: 14px; bottom: 14px; padding: 8px 12px 8px 8px; }
+      #rayan-btn .r-av { width: 32px; height: 32px; }
+      #rayan-btn .r-av span { font-size: 12px; }
+      #rayan-btn .r-name { font-size: 12px; }
+      #rayan-btn .r-sub { display: none; }
 
       #rayan-box {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        max-height: 100vh !important;
-        border-radius: 0 !important;
-        border: none !important;
-        box-shadow: none !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-        transform: none !important;
-        transition: opacity 0.2s ease !important;
-        display: flex !important;
-        flex-direction: column !important;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100%; height: 100%;
+        max-height: none;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        bottom: auto;
+        right: auto;
       }
-      #rayan-box.open {
-        opacity: 1 !important;
-        pointer-events: all !important;
-      }
-      .r-header { padding: 14px 16px !important; flex-shrink: 0 !important; }
-      .r-header-av { width: 40px !important; height: 40px !important; }
-      .r-header-av span { font-size: 16px !important; }
-      .r-header-name { font-size: 16px !important; }
-      .r-header-sub { font-size: 11px !important; }
-      .r-messages {
-        flex: 1 !important;
-        overflow-y: scroll !important;
-        -webkit-overflow-scrolling: touch !important;
-        padding: 14px !important;
-        gap: 10px !important;
-        min-height: 0 !important;
-        overscroll-behavior: contain !important;
-      }
-      .r-msg { font-size: 15px !important; padding: 11px 14px !important; max-width: 92% !important; }
-      .r-msg.hint { font-size: 13px !important; }
-      .r-chips { gap: 8px !important; }
-      .r-chip { font-size: 15px !important; padding: 13px 16px !important; border-radius: 8px !important; }
-      .r-footer { padding: 12px 14px !important; flex-shrink: 0 !important; }
-      .r-footer input { font-size: 16px !important; padding: 12px !important; border-radius: 8px !important; }
-      .r-footer button { width: 44px !important; height: 44px !important; font-size: 20px !important; border-radius: 8px !important; }
-      .r-powered { font-size: 11px !important; padding: 6px !important; flex-shrink: 0 !important; }
+      .r-msg { font-size: 15px; padding: 11px 14px; max-width: 90%; }
+      .r-msg.hint { font-size: 13px; }
+      .r-chip { font-size: 15px; padding: 13px 16px; }
+      .r-footer input { font-size: 16px; padding: 11px 12px; }
+      .r-footer button { width: 44px; height: 44px; font-size: 20px; }
     }
-  `;
+  `
 
   const style = document.createElement('style');
   style.textContent = css;
@@ -186,8 +169,21 @@
   function toggleChat() {
     isOpen = !isOpen;
     box.classList.toggle('open', isOpen);
-    if (isOpen) { clearUnread(); inp.focus(); }
+    if (isOpen) {
+      clearUnread();
+      // Small delay for Safari to render before focusing
+      setTimeout(() => inp.focus(), 100);
+    }
   }
+
+  // Handle iOS keyboard resize — keep input visible
+  function handleResize() {
+    if (isOpen && window.innerWidth <= 768) {
+      box.style.height = window.innerHeight + 'px';
+    }
+  }
+  window.addEventListener('resize', handleResize);
+  window.addEventListener('orientationchange', handleResize);
 
   function clearUnread() {
     unread = 0;
@@ -562,6 +558,6 @@
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
 
   // ── Init ──────────────────────────────────────────────────────────────────
-  setTimeout(() => { restoreSession(); setTimeout(() => { msgs.scrollTop = 0; }, 50); }, 800); 
+  setTimeout(() => { restoreSession(); setTimeout(() => { msgs.scrollTop = 0; }, 50); }, 800);
 
 })();
