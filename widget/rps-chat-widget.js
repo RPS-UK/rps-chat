@@ -339,68 +339,51 @@
   // ── Parse free text ───────────────────────────────────────────────────────
   function parseRequest(text) {
     const tl = text.toLowerCase();
-    const types = { restaurant: 'Restaurant', cafe: 'Cafe', coffee: 'Cafe', takeaway: 'Takeaway', 'take away': 'Takeaway', pub: 'Pub', bar: 'Pub' };
-    const budgetMap = {
-      '25k': 25000, '25,000': 25000, '50k': 50000, '50,000': 50000,
-      '75k': 75000, '80k': 80000, '80,000': 80000, '100k': 100000,
-      '100,000': 100000, '150k': 150000, '150,000': 150000,
-      '200k': 200000, '200,000': 200000, '250k': 250000,
-      '300k': 300000, '300,000': 300000, '500k': 500000
-    };
-    const areas = [
-      'ealing', 'harrow', 'hayes', 'hounslow', 'camden', 'croydon', 'wembley',
-      'uxbridge', 'southall', 'greenford', 'acton', 'chiswick', 'hammersmith',
-      'fulham', 'chelsea', 'westminster', 'islington', 'hackney', 'stratford',
-      'ilford', 'romford', 'barking', 'tooting', 'wimbledon', 'kingston',
-      'richmond', 'twickenham', 'staines', 'bloomsbury', 'kenton', 'raynes park',
-      'swiss cottage', 'brixton', 'peckham', 'lewisham', 'greenwich', 'woolwich',
-      'slough', 'watford', 'enfield', 'barnet', 'edgware', 'walthamstow',
-      'leyton', 'bethnal green', 'shoreditch', 'dalston', 'clapham', 'balham',
-      'streatham', 'sutton', 'morden', 'ruislip', 'northolt', 'perivale',
-      'hanwell', 'brentford', 'feltham', 'heston', 'eastcote', 'holborn',
-      'pinner', 'stanmore', 'wealdstone', 'alperton', 'sudbury', 'hendon',
-      'clerkenwell', 'farringdon', 'barbican', 'aldgate', 'whitechapel',
-      'stepney', 'poplar', 'canary wharf', 'isle of dogs', 'bermondsey',
-      'southwark', 'vauxhall', 'stockwell', 'oval', 'kennington',
-      'elephant and castle', 'borough', 'london bridge', 'bank', 'moorgate',
-      'liverpool street', 'brick lane', 'spitalfields', 'mile end', 'bow',
-      'forest gate', 'manor park', 'seven kings', 'goodmayes', 'chadwell heath',
-      'kingsbury', 'queensbury', 'burnt oak', 'colindale', 'brent cross',
-      'golders green', 'finchley', 'east finchley', 'highgate', 'archway',
-      'tufnell park', 'kentish town', 'chalk farm', 'belsize park', 'hampstead',
-      'cricklewood', 'willesden', 'harlesden', 'kensal green', 'ladbroke grove',
-      'notting hill', 'bayswater', 'paddington', 'marylebone', 'mayfair',
-      'soho', 'covent garden', 'strand', 'waterloo', 'lambeth', 'battersea',
-      'wandsworth', 'putney', 'roehampton', 'mortlake', 'kew', 'barnes',
-      'shepherds bush', 'white city', 'wood lane', 'latimer road',
-      'tottenham', 'wood green', 'palmers green', 'winchmore hill', 'southgate',
-      'oakwood', 'cockfosters', 'new southgate', 'friern barnet', 'new barnet',
-      'east barnet', 'hadley wood', 'potters bar', 'waltham cross',
-      'cheshunt', 'broxbourne', 'hertford', 'upminster', 'hornchurch',
-      'dagenham', 'rainham', 'purfleet', 'grays', 'tilbury'
-    ];
 
-    let type = '', location = '', maxPrice = 0;
-    for (const [k, v] of Object.entries(types)) { if (tl.includes(k)) { type = v; break; } }
-    for (const area of areas) {
-      if (tl.includes(area)) {
-        location = area.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-        break;
-      }
+    // Detect business type
+    const types = {
+      'restaurant': 'Restaurant', 'cafe': 'Cafe', 'coffee shop': 'Cafe',
+      'coffee': 'Cafe', 'takeaway': 'Takeaway', 'take away': 'Takeaway',
+      'pub': 'Pub', 'bar': 'Pub'
+    };
+    let type = '';
+    for (const [k, v] of Object.entries(types)) {
+      if (tl.includes(k)) { type = v; break; }
     }
-    if (!location) {
-      if (tl.includes('north west london')) location = 'North West London';
-      else if (tl.includes('west london')) location = 'West London';
-      else if (tl.includes('north london')) location = 'North London';
-      else if (tl.includes('central london')) location = 'Central London';
-      else if (tl.includes('east london')) location = 'East London';
-      else if (tl.includes('south london')) location = 'South London';
+
+    // Detect budget
+    const budgetMap = {
+      '25k': 25000, '50k': 50000, '75k': 75000, '80k': 80000,
+      '100k': 100000, '150k': 150000, '200k': 200000, '250k': 250000,
+      '300k': 300000, '500k': 500000,
+      '25,000': 25000, '50,000': 50000, '80,000': 80000,
+      '100,000': 100000, '150,000': 150000, '200,000': 200000,
+      '300,000': 300000, '500,000': 500000
+    };
+    let maxPrice = 0;
+    for (const [k, v] of Object.entries(budgetMap)) {
+      if (tl.includes(k)) { maxPrice = v; break; }
     }
-    for (const [k, v] of Object.entries(budgetMap)) { if (tl.includes(k)) { maxPrice = v; break; } }
     if (!maxPrice) {
       const m = tl.match(/£\s*(\d[\d,]*)/);
       if (m) maxPrice = parseInt(m[1].replace(/,/g, ''));
     }
+
+    // Extract location using "in/near/around LOCATION" pattern
+    let location = '';
+    const inMatch = text.match(/\b(?:in|near|around|within|at)\s+([A-Za-z][A-Za-z\s]+?)(?:\s*[,.]|\s+under|\s+budget|\s+around|\s+max|\s*$)/i);
+    if (inMatch) {
+      location = inMatch[1].trim().replace(/,+$/, '').trim();
+    }
+
+    // Remove false positives
+    const nonLocations = ['a', 'the', 'an', 'london', 'uk', 'england'];
+    if (location.length < 2 || nonLocations.includes(location.toLowerCase())) {
+      location = '';
+    }
+    // If "in london" just use London
+    if (!location && tl.includes(' london')) location = 'London';
+
     return { type, location, maxPrice };
   }
 
@@ -475,27 +458,18 @@
       history.push({ role: 'assistant', content: raw });
 
       clearChips();
-      const linked = clean.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, (_, label, url) => {
-        return `__LINK__${label}__URL__${url}__END__`;
-      });
 
-      const parts = linked.split(/__LINK__|__END__/);
+      // Parse markdown links from AI response
+      const links = [];
+      const plainText = clean.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, (match, label, url) => {
+        links.push({ url, label });
+        return '';
+      }).trim();
+
       const msgEl = document.createElement('div');
       msgEl.className = 'r-msg bot';
       msgEl.style.whiteSpace = 'pre-wrap';
-
-      const links = [];
-      let plainText = '';
-      parts.forEach(part => {
-        if (part.includes('__URL__')) {
-          const [label, url] = part.split('__URL__');
-          links.push({ url, label });
-        } else {
-          plainText += part;
-        }
-      });
-
-      msgEl.textContent = plainText.trim();
+      msgEl.textContent = plainText;
       links.forEach(l => {
         const a = document.createElement('a');
         a.href = l.url; a.target = '_blank'; a.rel = 'noopener';
@@ -505,7 +479,7 @@
 
       msgs.appendChild(msgEl);
       msgs.scrollTop = msgs.scrollHeight;
-      msgData.push({ text: plainText.trim(), role: 'bot', links });
+      msgData.push({ text: plainText, role: 'bot', links });
 
       if (raw.includes('LEAD_DATA:')) {
         leadCaptured = true;
