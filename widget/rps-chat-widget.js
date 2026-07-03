@@ -56,14 +56,14 @@
     .r-powered { text-align: center; font-size: 10px; color: #bbb; padding: 6px; background: #fff; letter-spacing: 0.4px; font-family: 'Poppins', sans-serif; font-weight: 300; border-top: 0.5px solid #f0ece3; }
     @media (max-width: 768px) {
       #rayan-btn {
-        right: 14px;
-        bottom: 14px;
-        padding: 8px 14px 8px 8px;
+        right: 14px !important;
+        bottom: 14px !important;
+        padding: 8px 14px 8px 8px !important;
       }
-      #rayan-btn .r-av { width: 34px; height: 34px; }
-      #rayan-btn .r-av span { font-size: 13px; }
-      #rayan-btn .r-name { font-size: 13px; }
-      #rayan-btn .r-sub { display: none; }
+      #rayan-btn .r-av { width: 34px !important; height: 34px !important; }
+      #rayan-btn .r-av span { font-size: 13px !important; }
+      #rayan-btn .r-name { font-size: 13px !important; }
+      #rayan-btn .r-sub { display: none !important; }
 
       #rayan-box {
         position: fixed !important;
@@ -71,73 +71,45 @@
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        max-height: none !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
         border-radius: 0 !important;
         border: none !important;
         box-shadow: none !important;
-        transform: translateY(100%) !important;
-        transition: transform 0.3s ease !important;
-        opacity: 1 !important;
-        pointer-events: none;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transform: none !important;
+        transition: opacity 0.2s ease !important;
         display: flex !important;
         flex-direction: column !important;
       }
       #rayan-box.open {
-        transform: translateY(0) !important;
+        opacity: 1 !important;
         pointer-events: all !important;
       }
-      .r-header {
-        padding: 14px 16px;
-        flex-shrink: 0;
-      }
-      .r-header-av { width: 40px; height: 40px; }
-      .r-header-av span { font-size: 16px; }
-      .r-header-name { font-size: 16px; }
-      .r-header-sub { font-size: 11px; }
+      .r-header { padding: 14px 16px !important; flex-shrink: 0 !important; }
+      .r-header-av { width: 40px !important; height: 40px !important; }
+      .r-header-av span { font-size: 16px !important; }
+      .r-header-name { font-size: 16px !important; }
+      .r-header-sub { font-size: 11px !important; }
       .r-messages {
         flex: 1 !important;
-        overflow-y: auto !important;
+        overflow-y: scroll !important;
         -webkit-overflow-scrolling: touch !important;
         padding: 14px !important;
         gap: 10px !important;
         min-height: 0 !important;
-        overscroll-behavior: contain;
+        overscroll-behavior: contain !important;
       }
-      .r-msg {
-        font-size: 15px !important;
-        padding: 11px 14px !important;
-        max-width: 92% !important;
-      }
+      .r-msg { font-size: 15px !important; padding: 11px 14px !important; max-width: 92% !important; }
       .r-msg.hint { font-size: 13px !important; }
       .r-chips { gap: 8px !important; }
-      .r-chip {
-        font-size: 15px !important;
-        padding: 13px 16px !important;
-        border-radius: 8px !important;
-      }
-      .r-footer {
-        padding: 12px 14px !important;
-        flex-shrink: 0 !important;
-        padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
-      }
-      .r-footer input {
-        font-size: 16px !important;
-        padding: 12px !important;
-        border-radius: 8px !important;
-      }
-      .r-footer button {
-        width: 44px !important;
-        height: 44px !important;
-        font-size: 20px !important;
-        border-radius: 8px !important;
-      }
-      .r-powered {
-        font-size: 11px !important;
-        padding: 6px !important;
-        flex-shrink: 0 !important;
-      }
+      .r-chip { font-size: 15px !important; padding: 13px 16px !important; border-radius: 8px !important; }
+      .r-footer { padding: 12px 14px !important; flex-shrink: 0 !important; }
+      .r-footer input { font-size: 16px !important; padding: 12px !important; border-radius: 8px !important; }
+      .r-footer button { width: 44px !important; height: 44px !important; font-size: 20px !important; border-radius: 8px !important; }
+      .r-powered { font-size: 11px !important; padding: 6px !important; flex-shrink: 0 !important; }
     }
   `;
 
@@ -421,14 +393,15 @@
     const typeLabel = type || 'Businesses';
     const priceLabel = maxPrice ? ' — under £' + maxPrice.toLocaleString() : '';
 
-    addMsg('Here are listings matching your requirement.', 'bot', [
-      { url: exactUrl, label: 'View ' + typeLabel + ' within 3 miles of ' + formattedLocation + priceLabel },
+    const listingText = 'Here are ' + (type ? type.toLowerCase() + 's' : 'businesses') + ' for sale within 3 miles of ' + formattedLocation + (maxPrice ? ', under £' + maxPrice.toLocaleString() : '') + ':';
+    addMsg(listingText, 'bot', [
+      { url: exactUrl, label: 'View listings within 3 miles of ' + formattedLocation },
       { url: broaderUrl, label: 'Expand to 6 miles (more results)', secondary: true },
       { url: similarUrl, label: 'See all listings near ' + formattedLocation, secondary: true }
     ]);
 
     setTimeout(() => {
-      addMsg('To receive alerts when new matching listings are added, may I take your name, email and phone number?', 'bot');
+      addMsg('To receive alerts for new listings matching your criteria, may I take your name, email and phone number?', 'bot');
       state = 'capture';
       saveSession();
     }, 300);
@@ -508,6 +481,14 @@
     }
 
     if (state === 'capture') {
+      // Check if user is asking about a new location instead of providing contact details
+      const { type: newType, location: newLoc, maxPrice: newPrice } = parseRequest(text);
+      if (newLoc && !text.includes('@') && !/\d{5,}/.test(text)) {
+        // Looks like a location search, not contact details
+        state = 'buyer';
+        processBuyerRequest(text);
+        return;
+      }
       sendBtn.disabled = true;
       callAI(text);
       return;
