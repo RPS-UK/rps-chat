@@ -62,35 +62,47 @@
       #rayan-btn .r-sub { display: none; }
 
       #rayan-box {
-        width: 100vw;
-        height: 100%;
-        max-height: 100dvh;
-        right: 0;
-        bottom: 0;
-        border-radius: 0;
-        border: none;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        border-radius: 0 !important;
+        border: none !important;
+        transform: none !important;
+        opacity: 0;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
       }
       #rayan-box.open {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        width: 100vw;
-        height: 100dvh;
-        border-radius: 0;
-        transform: scale(1) translateY(0);
+        opacity: 1 !important;
+        pointer-events: all !important;
+        transform: none !important;
       }
-      .r-header { padding: 12px 14px; }
-      .r-header-av { width: 36px; height: 36px; }
-      .r-header-av span { font-size: 14px; }
+      .r-header { padding: 12px 14px; flex-shrink: 0; }
+      .r-header-av { width: 38px; height: 38px; }
+      .r-header-av span { font-size: 15px; }
       .r-header-name { font-size: 15px; }
       .r-header-sub { font-size: 10px; }
-      .r-messages { padding: 12px; gap: 8px; }
+      .r-messages {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 12px;
+        gap: 8px;
+        min-height: 0 !important;
+      }
       .r-msg { font-size: 14px; padding: 10px 13px; max-width: 90%; }
       .r-msg.hint { font-size: 12px; }
-      .r-chip { font-size: 14px; padding: 11px 14px; }
-      .r-footer { padding: 10px 12px; }
+      .r-chip { font-size: 14px; padding: 12px 14px; }
+      .r-footer { padding: 10px 12px; flex-shrink: 0; }
       .r-footer input { font-size: 16px; padding: 11px 12px; }
       .r-footer button { width: 42px; height: 42px; font-size: 20px; }
-      .r-powered { font-size: 10px; padding: 5px; }
+      .r-powered { font-size: 10px; padding: 5px; flex-shrink: 0; }
     }
   `;
 
