@@ -26,7 +26,7 @@
     #rayan-btn .r-name { font-size: 15px; font-weight: 600; color: #fff; font-family: 'Poppins', sans-serif; letter-spacing: 0.2px; line-height: 1; display: block; }
     #rayan-btn .r-sub { font-size: 10px; color: #a8c9d0; font-family: 'Poppins', sans-serif; font-weight: 300; letter-spacing: 0.3px; margin-top: 2px; display: block; }
     #rayan-btn .r-unread { position: absolute; top: -4px; right: -4px; width: 20px; height: 20px; border-radius: 50%; background: #e24b4a; color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; border: 2px solid #fff; }
-    #rayan-box { position: fixed; bottom: 100px; right: 28px; z-index: 99999; width: 360px; height: 560px; border-radius: 16px; overflow: hidden; border: 0.5px solid #c8d8dc; display: flex; flex-direction: column; background: #fff; font-family: 'Poppins', sans-serif; transform: scale(0.95) translateY(10px); opacity: 0; transition: transform 0.25s, opacity 0.25s; pointer-events: none; box-shadow: 0 8px 32px rgba(42,82,94,0.18); }
+    #rayan-box { position: fixed; bottom: 100px; right: 28px; z-index: 99999; width: 380px; height: 620px; border-radius: 16px; overflow: hidden; border: 0.5px solid #c8d8dc; display: flex; flex-direction: column; background: #fff; font-family: 'Poppins', sans-serif; transform: scale(0.95) translateY(10px); opacity: 0; transition: transform 0.25s, opacity 0.25s; pointer-events: none; box-shadow: 0 8px 32px rgba(42,82,94,0.18); }
     #rayan-box.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
     .r-header { background: #2a525e; padding: 14px 16px; display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
     .r-header-av { width: 42px; height: 42px; border-radius: 50%; background: #ffbd4a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -54,10 +54,90 @@
     .r-footer button:hover { background: #1e3d47; }
     .r-footer button:disabled { opacity: 0.4; cursor: default; }
     .r-powered { text-align: center; font-size: 10px; color: #bbb; padding: 6px; background: #fff; letter-spacing: 0.4px; font-family: 'Poppins', sans-serif; font-weight: 300; border-top: 0.5px solid #f0ece3; }
-    @media (max-width: 420px) {
-      #rayan-box { width: calc(100vw - 20px); right: 10px; bottom: 90px; }
-      #rayan-btn { right: 10px; bottom: 16px; }
+    @media (max-width: 768px) {
+      #rayan-btn {
+        right: 14px;
+        bottom: 14px;
+        padding: 8px 14px 8px 8px;
+      }
+      #rayan-btn .r-av { width: 34px; height: 34px; }
+      #rayan-btn .r-av span { font-size: 13px; }
+      #rayan-btn .r-name { font-size: 13px; }
       #rayan-btn .r-sub { display: none; }
+
+      #rayan-box {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-height: none !important;
+        border-radius: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease !important;
+        opacity: 1 !important;
+        pointer-events: none;
+        display: flex !important;
+        flex-direction: column !important;
+      }
+      #rayan-box.open {
+        transform: translateY(0) !important;
+        pointer-events: all !important;
+      }
+      .r-header {
+        padding: 14px 16px;
+        flex-shrink: 0;
+      }
+      .r-header-av { width: 40px; height: 40px; }
+      .r-header-av span { font-size: 16px; }
+      .r-header-name { font-size: 16px; }
+      .r-header-sub { font-size: 11px; }
+      .r-messages {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 14px !important;
+        gap: 10px !important;
+        min-height: 0 !important;
+        overscroll-behavior: contain;
+      }
+      .r-msg {
+        font-size: 15px !important;
+        padding: 11px 14px !important;
+        max-width: 92% !important;
+      }
+      .r-msg.hint { font-size: 13px !important; }
+      .r-chips { gap: 8px !important; }
+      .r-chip {
+        font-size: 15px !important;
+        padding: 13px 16px !important;
+        border-radius: 8px !important;
+      }
+      .r-footer {
+        padding: 12px 14px !important;
+        flex-shrink: 0 !important;
+        padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
+      }
+      .r-footer input {
+        font-size: 16px !important;
+        padding: 12px !important;
+        border-radius: 8px !important;
+      }
+      .r-footer button {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 20px !important;
+        border-radius: 8px !important;
+      }
+      .r-powered {
+        font-size: 11px !important;
+        padding: 6px !important;
+        flex-shrink: 0 !important;
+      }
     }
   `;
 
@@ -170,7 +250,7 @@
       });
     }
     msgs.appendChild(d);
-    msgs.scrollTop = msgs.scrollHeight;
+    if (msgData.length > 1) msgs.scrollTop = msgs.scrollHeight;
   }
 
   function addMsg(text, role, links) {
@@ -205,7 +285,7 @@
   function restoreSession() {
     if (msgData && msgData.length) {
       msgData.forEach(d => renderMsg(d));
-      msgs.scrollTop = msgs.scrollHeight;
+      msgs.scrollTop = 0;
       bumpUnread();
       // Restore interactive elements based on current state
       if (state === 'greeting' || !state) {
@@ -225,7 +305,7 @@
 
   function showGreeting() {
     state = 'greeting';
-    addMsg("Welcome to Restaurant Property Sellers. I'm Rayan, your sales advisor.\n\nHow can I help you today? Simply type your requirement or choose an option below.", 'bot');
+    addMsg("Hi, I'm Rayan — your sales advisor at Restaurant Property Sellers. How can I help you today?", 'bot');
     addHint('e.g. "Restaurant in Ealing under £100k" or "I want to sell my cafe"');
     addChips(['I am looking to buy', 'I am thinking of selling', 'I am a landlord', 'Franchisor', 'Franchisee']);
     saveSession();
@@ -505,6 +585,6 @@
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
 
   // ── Init ──────────────────────────────────────────────────────────────────
-  setTimeout(() => restoreSession(), 800);
+  setTimeout(() => { restoreSession(); setTimeout(() => { msgs.scrollTop = 0; }, 50); }, 800);
 
 })();
