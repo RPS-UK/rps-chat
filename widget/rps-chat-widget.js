@@ -562,6 +562,6 @@
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
 
   // ── Init ──────────────────────────────────────────────────────────────────
-  setTimeout(() => { restoreSession(); setTimeout(() => { msgs.scrollTop = 0; }, 50); }, 800);
+  setTimeout(() => { restoreSession(); setTimeout(() => { msgs.scrollTop = 0; }, 50); }, 800); 
 
 })();
